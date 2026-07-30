@@ -23,6 +23,7 @@ import UserProtectedRoute from "./UserProtectedRoute";
 import AdminProtectedRoute from "./AdminProtectedRoute";
 import PreHireFileManagement from './superadmin/prehirefile';
 import PreHireFilesPage from './prehirefiles';
+import TemplateFiles from './superadmin/templatefiles';
 
 const stripePromise = loadStripe("pk_test_51OwuO4LcfLzcwwOYdssgGfUSfOgWT1LwO6ewi3CEPewY7WEL9ATqH6WJm3oAcLDA3IgUvVYLVEBMIEu0d8fUwhlw009JwzEYmV");
 
@@ -62,6 +63,7 @@ function App() {
           <Route path='filemanagement' element={<FileManagement />} />
           <Route path='invoicemanagement' element={<UserInvoiceManagement/>}/>
           <Route path='prehire' element={<PreHireFileManagement/>}/>
+          <Route path='templatefile' element={<TemplateFiles/>}/>
         </Route>
 
       </Routes>
