@@ -1,13 +1,7 @@
 import React from 'react';
 import { FileSpreadsheet, FileText, Download } from 'lucide-react';
 
-/**
- * Template Files page.
- *
- * Drop your two template files into your app's `public` folder (e.g. `public/assets/templates/`)
- * and update the `path` values below to match. Since these are static files served from
- * `public`, no backend/API call is needed — the browser downloads them directly.
- */
+
 const TEMPLATE_FILES = [
   {
     id: 'prehire-template',
@@ -101,7 +95,7 @@ export default function TemplateFiles() {
       >
         <div className="max-w-7xl mx-auto">
 
-          {/* Header */}
+       
           <div className="mb-8">
             <h1
               className="text-3xl mb-2"
@@ -114,7 +108,6 @@ export default function TemplateFiles() {
             </p>
           </div>
 
-          {/* Template cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {TEMPLATE_FILES.map(file => (
               <TemplateCard key={file.id} file={file} />
