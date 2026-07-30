@@ -106,11 +106,11 @@ toast.error("Error occured while trying to login",{containerId:"adminLogin"})
         <div className="rounded-2xl shadow-2xl overflow-hidden" style={{ background: '#ffffff' }}>
           <div className="px-8 py-10 text-center" style={{ background: '#12229d' }}>
           <div className="flex justify-center mb-6">
-      <img
-        src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
-        alt="The Apax Group"
-        className="w-20 h-20 object-contain"
-      />
+          <img
+  src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
+  alt="The Apax Group"
+  className="w-40 h-40 object-contain"
+/>
     </div>
             <h1
               className="text-2xl mb-2"

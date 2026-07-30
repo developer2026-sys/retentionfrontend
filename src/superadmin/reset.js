@@ -158,11 +158,11 @@ function SuperAdminReset() {
           <div className="rounded-2xl shadow-2xl overflow-hidden" style={{ background: '#ffffff' }}>
             {/* Header with gradient */}
             <div className="px-8 py-10 text-center" style={{ background: '#12229d' }}>
-              <img
-                src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
-                alt="The Apax Group"
-                className="w-20 h-20 mx-auto mb-4 object-contain"
-              />
+            <img
+  src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
+  alt="The Apax Group"
+  className="w-40 h-40 object-contain"
+/>
               <h1
                 className="text-2xl mb-2"
                 style={{ fontFamily: "'Anton', sans-serif", color: '#ffffff', letterSpacing: '0.5px' }}

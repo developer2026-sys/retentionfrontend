@@ -60,7 +60,7 @@ function Sidebar() {
                 <img
                   src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
                   alt="The Apax Group"
-                  className="w-10 h-10 object-contain"
+                  className="w-14 h-14 object-contain"
                 />
                 <div className="flex flex-col leading-tight">
                   <span

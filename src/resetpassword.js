@@ -84,10 +84,10 @@ if(e?.response?.data?.error){
         <div className="w-full max-w-md">
         <div className="flex justify-center mb-6">
         <img
-          src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
-          alt="The Apax Group"
-          className="w-24 h-24 object-contain"
-        />
+  src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
+  alt="The Apax Group"
+  className="w-40 h-40 object-contain"
+/>
       </div>
           <div
             className="rounded-2xl shadow-xl p-8"

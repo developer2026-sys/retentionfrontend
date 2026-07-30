@@ -732,11 +732,11 @@ function UploadFile() {
 
         {/* Logo */}
         <div className="mb-4">
-          <img
-            src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
-            alt="The Apax Group"
-            className="w-20 h-20 object-contain"
-          />
+        <img
+  src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
+  alt="The Apax Group"
+  className="w-40 h-40 object-contain"
+/>
         </div>
 
         {/* Brand name */}

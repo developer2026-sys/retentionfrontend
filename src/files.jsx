@@ -300,11 +300,11 @@ function FilesPage() {
         {/* Top bar */}
         <div style={{ background: '#ffffff', borderBottom: '1px solid #e5e7eb' }}>
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center">
-            <img
-              src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
-              alt="The Apax Group"
-              style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
-            />
+          <img
+  src="https://res.cloudinary.com/dbjwbveqn/image/upload/v1782471932/Apax_Group_Logo_1_qcrz5c.png"
+  alt="The Apax Group"
+  className="w-40 h-40 object-contain"
+/>
           </div>
         </div>
 
