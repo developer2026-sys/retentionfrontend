@@ -90,7 +90,8 @@ function UploadFile() {
   const [credits, setCredits] = useState(0);
   const [originalAmount, setOriginalAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('prehire');
-
+  const [showBackendProcess, setShowBackendProcess] = useState(false);
+  const [backendSteps, setBackendSteps] = useState([]);
   // Filter states
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedJobClass, setSelectedJobClass] = useState('all');
@@ -187,6 +188,68 @@ function UploadFile() {
       return 'Your file could not be accepted because it is missing required fields. Please ensure your file includes Candidate Name and Address columns.';
     }
     return null;
+  };
+
+
+  const watchBackendProgress = async (progressId) => {
+    const token = localStorage.getItem('token');
+  
+    for (let attempt = 0; attempt < 150; attempt++) {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/enrich-progress/${progressId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        if (response.ok) {
+          const data = await response.json();
+  
+          setBackendSteps(data.steps || []);
+  
+          if (
+            data.status === 'completed' ||
+            data.status === 'failed'
+          ) {
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Progress check failed:', error);
+      }
+  
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    }
+  };
+  
+  const submitEnrich = async (formData, token) => {
+    const progressId =
+      window.crypto?.randomUUID?.() ||
+      `${Date.now()}-${Math.random()}`;
+  
+    formData.append('progressId', progressId);
+  
+    setBackendSteps([
+      {
+        message: 'Upload started',
+        time: new Date().toISOString(),
+      },
+    ]);
+  
+    setShowBackendProcess(true);
+  
+    watchBackendProgress(progressId);
+  
+    return fetch(`${BASE_URL}/enrich`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
   };
 
 
@@ -290,12 +353,14 @@ function UploadFile() {
       formData.append('recordCount', preHireRecordCount);
       formData.append('creditsUsed', '0');
       formData.append('isPreHire', 'true');
-
-      const res = await fetch(`${BASE_URL}/enrich`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
+      setShowBackendProcess(true);
+      
+      const res = await submitEnrich(formData, token);
+      // const res = await fetch(`${BASE_URL}/enrich`, {
+      //   method: 'POST',
+      //   headers: { Authorization: `Bearer ${token}` },
+      //   body: formData,
+      // });
 
       if (!res.ok) {
         const errData = await res.json();
@@ -532,11 +597,13 @@ function UploadFile() {
       formData.append('recordCount', recordCount);
       formData.append('creditsUsed', '0');
 
-      const res = await fetch(`${BASE_URL}/enrich`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
+      setShowBackendProcess(true);
+      const res = await submitEnrich(formData, token);
+      // const res = await fetch(`${BASE_URL}/enrich`, {
+      //   method: 'POST',
+      //   headers: { Authorization: `Bearer ${token}` },
+      //   body: formData,
+      // });
       if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Failed to process file'); }
 
       const data = await res.json();
@@ -561,7 +628,9 @@ function UploadFile() {
       formData.append('paymentIntentId', paymentIntentId);
       setSameFile(file);
       const token = localStorage.getItem('token');
-      const res = await fetch(`${BASE_URL}/enrich`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+      setShowBackendProcess(true);
+      const res = await submitEnrich(formData, token);
+      // const res = await fetch(`${BASE_URL}/enrich`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
       const data = await res.json();
       setCorrectPasscode(data.passcode);
       setResult(data.results);
@@ -584,7 +653,9 @@ function UploadFile() {
       formData.append('creditsUsed', creditsUsed);
       setSameFile(file);
       const token = localStorage.getItem('token');
-      const res = await fetch(`${BASE_URL}/enrich`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+      setShowBackendProcess(true);
+      const res = await submitEnrich(formData, token);
+      // const res = await fetch(`${BASE_URL}/enrich`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
       const data = await res.json();
       setCorrectPasscode(data.passcode);
       setResult(data.results);
@@ -1314,60 +1385,186 @@ Abernathy, Rita K.,rabernathy@company.org,9790 North 100 West,01/15/1985,03/20/2
               </div>
             </div>
 
-            {/* ── Pre-hire tab ──────────────────────────────────────────────── */}
-            {activeTab === 'prehire' && <PreHireScreen />}
+            {/* Upload and Backend Process tabs */}
+<div className="flex justify-center gap-2 mb-6 border-b border-gray-200">
+  <button
+    onClick={() => setShowBackendProcess(false)}
+    className={`px-5 py-2 text-sm font-semibold border-b-2 ${
+      !showBackendProcess
+        ? 'border-blue-600 text-blue-600'
+        : 'border-transparent text-gray-400'
+    }`}
+  >
+    Upload
+  </button>
 
-            {/* ── Current staff tab ─────────────────────────────────────────── */}
-            {activeTab === 'current' && (
-              <>
-                <div className="mb-3 flex justify-end">
-                  <button onClick={() => setShowSampleFormat(true)} className="text-sm underline" style={{ color: BRAND.primary }}>
-                    View sample file format
-                  </button>
-                </div>
+  <button
+    onClick={() => setShowBackendProcess(true)}
+    className={`px-5 py-2 text-sm font-semibold border-b-2 ${
+      showBackendProcess
+        ? 'border-blue-600 text-blue-600'
+        : 'border-transparent text-gray-400'
+    }`}
+  >
+    Backend Process
+  </button>
+</div>
 
-                <div
-                  className={`border-2 border-dashed rounded-xl p-4 sm:p-6 lg:p-8 text-center mb-4 sm:mb-6 transition-all duration-300 ${isDragging ? 'bg-blue-50' : 'bg-white hover:bg-blue-50'}`}
-                  style={{ borderColor: isDragging ? BRAND.primary : `${BRAND.primary}66` }}
-                >
-                  <input type="file" id="fileInput" onChange={handleFileChange} accept=".csv, .xlsx" className="hidden" />
-                  <label htmlFor="fileInput" className="cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill={BRAND.primary} className="mx-auto mb-3 sm:mb-4 w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16">
-                      <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
-                    </svg>
-                    <p className="text-sm sm:text-base lg:text-lg text-gray-700 mb-2">
-                      Drag and drop your CSV/Excel file here or click to browse
-                    </p>
-                    {file && <p className="font-medium text-sm sm:text-base mt-2" style={{ color: BRAND.primary }}>Selected file: {file.name}</p>}
-                  </label>
-                </div>
+{showBackendProcess ? (
+  <div className="rounded-xl border border-blue-100 bg-blue-50 p-5">
+    <h3
+      className="text-xl mb-2"
+      style={{
+        fontFamily: "'Anton', sans-serif",
+        color: BRAND.black,
+      }}
+    >
+      BACKEND PROCESS
+    </h3>
 
-                <button
-                  onClick={() => setShowFilterPopup(true)}
-                  disabled={!file || isLoading}
-                  className={`w-full sm:w-auto mx-auto block px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 ${!file || isLoading ? 'bg-gray-400 text-white cursor-not-allowed' : 'text-white hover:scale-105 active:scale-95'}`}
-                  style={!file || isLoading ? {} : { backgroundColor: BRAND.primary }}
-                  onMouseEnter={(e) => { if (file && !isLoading) e.currentTarget.style.backgroundColor = BRAND.primaryHover; }}
-                  onMouseLeave={(e) => { if (file && !isLoading) e.currentTarget.style.backgroundColor = BRAND.primary; }}
-                >
-                  {isLoading ? 'Processing...' : 'Upload & Analyze'}
-                </button>
+    <p className="text-sm text-gray-600 mb-4">
+      This shows the processing activity completed by the backend.
+    </p>
 
-                {result.length > 0 && (
-                  <button
-                    onClick={exportToCSV}
-                    className={`w-full sm:w-auto mx-auto block mt-3 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 ${isReportLocked ? 'bg-gray-400 text-white cursor-not-allowed' : 'text-white hover:scale-105 active:scale-95'}`}
-                    style={isReportLocked ? {} : { backgroundColor: BRAND.navy }}
-                    onMouseEnter={(e) => { if (!isReportLocked) e.currentTarget.style.backgroundColor = '#0d1b80'; }}
-                    onMouseLeave={(e) => { if (!isReportLocked) e.currentTarget.style.backgroundColor = BRAND.navy; }}
-                  >
-                    {isReportLocked ? '🔒 Export Locked' : 'Export CSV'}
-                  </button>
-                )}
-              </>
+    {backendSteps.length > 0 ? (
+      <div className="space-y-3">
+        {backendSteps.map((step, index) => (
+          <div
+            key={`${step.time || 'step'}-${index}`}
+            className="flex items-center gap-3 bg-white rounded-lg border border-blue-100 p-3"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold">
+              ✓
+            </span>
+
+            <div>
+              <p className="text-sm font-medium text-gray-800">
+                {step.message}
+              </p>
+
+              {step.time && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(step.time).toLocaleTimeString()}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-sm text-gray-500">
+        Start an upload to view backend processing steps.
+      </p>
+    )}
+  </div>
+) : (
+  <>
+    {/* Pre-hire tab */}
+    {activeTab === 'prehire' && <PreHireScreen />}
+
+    {/* Current staff tab */}
+    {activeTab === 'current' && (
+      <>
+        <div className="mb-3 flex justify-end">
+          <button
+            onClick={() => setShowSampleFormat(true)}
+            className="text-sm underline"
+            style={{ color: BRAND.primary }}
+          >
+            View sample file format
+          </button>
+        </div>
+
+        <div
+          className={`border-2 border-dashed rounded-xl p-4 sm:p-6 lg:p-8 text-center mb-4 sm:mb-6 transition-all duration-300 ${
+            isDragging ? 'bg-blue-50' : 'bg-white hover:bg-blue-50'
+          }`}
+          style={{
+            borderColor: isDragging
+              ? BRAND.primary
+              : `${BRAND.primary}66`,
+          }}
+        >
+          <input
+            type="file"
+            id="fileInput"
+            onChange={handleFileChange}
+            accept=".csv, .xlsx"
+            className="hidden"
+          />
+
+          <label htmlFor="fileInput" className="cursor-pointer">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill={BRAND.primary}
+              className="mx-auto mb-3 sm:mb-4 w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16"
+            >
+              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+            </svg>
+
+            <p className="text-sm sm:text-base lg:text-lg text-gray-700 mb-2">
+              Drag and drop your CSV/Excel file here or click to browse
+            </p>
+
+            {file && (
+              <p
+                className="font-medium text-sm sm:text-base mt-2"
+                style={{ color: BRAND.primary }}
+              >
+                Selected file: {file.name}
+              </p>
+            )}
+          </label>
+        </div>
+
+        <button
+          onClick={() => setShowFilterPopup(true)}
+          disabled={!file || isLoading}
+          className={`w-full sm:w-auto mx-auto block px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 ${
+            !file || isLoading
+              ? 'bg-gray-400 text-white cursor-not-allowed'
+              : 'text-white hover:scale-105 active:scale-95'
+          }`}
+          style={
+            !file || isLoading
+              ? {}
+              : { backgroundColor: BRAND.primary }
+          }
+        >
+          {isLoading ? 'Processing...' : 'Upload & Analyze'}
+        </button>
+
+        {result.length > 0 && (
+          <button
+            onClick={exportToCSV}
+            className={`w-full sm:w-auto mx-auto block mt-3 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 ${
+              isReportLocked
+                ? 'bg-gray-400 text-white cursor-not-allowed'
+                : 'text-white hover:scale-105 active:scale-95'
+            }`}
+            style={
+              isReportLocked
+                ? {}
+                : { backgroundColor: BRAND.navy }
+            }
+          >
+            {isReportLocked ? 'Export Locked' : 'Export CSV'}
+          </button>
+        )}
+      </>
+    )}
+  </>
+
             )}
           </div>
+
+          
         )}
+
+
 
 {!landingVisible && activeTab === 'current' && result.length > 0 && <EmployeeDashboard />}
         {!landingVisible && activeTab === 'prehire' && preHireResult.length > 0 && (
