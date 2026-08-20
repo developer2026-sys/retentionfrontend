@@ -239,7 +239,7 @@ function UploadFile() {
       },
     ]);
   
-    setShowBackendProcess(true);
+    setShowBackendProcess(false);
   
     watchBackendProgress(progressId);
   
@@ -353,7 +353,7 @@ function UploadFile() {
       formData.append('recordCount', preHireRecordCount);
       formData.append('creditsUsed', '0');
       formData.append('isPreHire', 'true');
-      setShowBackendProcess(true);
+      setShowBackendProcess(false);
       
       const res = await submitEnrich(formData, token);
       // const res = await fetch(`${BASE_URL}/enrich`, {
@@ -597,7 +597,7 @@ function UploadFile() {
       formData.append('recordCount', recordCount);
       formData.append('creditsUsed', '0');
 
-      setShowBackendProcess(true);
+      setShowBackendProcess(false);
       const res = await submitEnrich(formData, token);
       // const res = await fetch(`${BASE_URL}/enrich`, {
       //   method: 'POST',
@@ -628,7 +628,7 @@ function UploadFile() {
       formData.append('paymentIntentId', paymentIntentId);
       setSameFile(file);
       const token = localStorage.getItem('token');
-      setShowBackendProcess(true);
+      setShowBackendProcess(false);
       const res = await submitEnrich(formData, token);
       // const res = await fetch(`${BASE_URL}/enrich`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
       const data = await res.json();
@@ -653,7 +653,7 @@ function UploadFile() {
       formData.append('creditsUsed', creditsUsed);
       setSameFile(file);
       const token = localStorage.getItem('token');
-      setShowBackendProcess(true);
+      setShowBackendProcess(false);
       const res = await submitEnrich(formData, token);
       // const res = await fetch(`${BASE_URL}/enrich`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
       const data = await res.json();
@@ -1385,7 +1385,7 @@ Abernathy, Rita K.,rabernathy@company.org,9790 North 100 West,01/15/1985,03/20/2
               </div>
             </div>
 
-            {/* Upload and Backend Process tabs */}
+            {/* Upload and Backend Process tabs
 <div className="flex justify-center gap-2 mb-6 border-b border-gray-200">
   <button
     onClick={() => setShowBackendProcess(false)}
@@ -1408,7 +1408,7 @@ Abernathy, Rita K.,rabernathy@company.org,9790 North 100 West,01/15/1985,03/20/2
   >
     Backend Process
   </button>
-</div>
+</div> */}
 
 {showBackendProcess ? (
   <div className="rounded-xl border border-blue-100 bg-blue-50 p-5">
