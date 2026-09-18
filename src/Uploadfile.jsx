@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import FinancialImpactDashboard from './components/FinancialImpactDashboard';
 import ConfirmationPopup from './components/ConfirmationPopup';
+
 import PasscodePopup from './components/PasscodePopup';
 import PaymentPopup from './components/PaymentPopup';
 import StripePaymentPopup from './components/StripePaymentPopup';
 import { BASE_URL } from './baseurl';
+
 
 // ─── Apax Group brand kit ──────────────────────────────────────────────────
 // Colors:  #233dff (primary blue) · #12229d (deep navy) · #000000 (near black)
@@ -90,6 +93,7 @@ function UploadFile() {
   const [credits, setCredits] = useState(0);
   const [originalAmount, setOriginalAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('prehire');
+  const [resultsView, setResultsView] = useState('dashboard'); // 'dashboard' | 'financial'
   const [showBackendProcess, setShowBackendProcess] = useState(false);
   const [backendSteps, setBackendSteps] = useState([]);
   // Filter states
@@ -1566,9 +1570,49 @@ Abernathy, Rita K.,rabernathy@company.org,9790 North 100 West,01/15/1985,03/20/2
 
 
 
-{!landingVisible && activeTab === 'current' && result.length > 0 && <EmployeeDashboard />}
+{!landingVisible && activeTab === 'current' && result.length > 0 && (
+  <>
+    <div className="flex justify-center gap-2 mb-4 mt-6">
+      <button
+        onClick={() => setResultsView('dashboard')}
+        className="px-5 py-2 rounded-full text-sm font-semibold transition-colors"
+        style={resultsView === 'dashboard' ? { backgroundColor: BRAND.primary, color: '#fff' } : { backgroundColor: '#f3f4f6', color: '#4b5563' }}
+      >
+        Retention Dashboard
+      </button>
+      <button
+        onClick={() => setResultsView('financial')}
+        className="px-5 py-2 rounded-full text-sm font-semibold transition-colors"
+        style={resultsView === 'financial' ? { backgroundColor: BRAND.primary, color: '#fff' } : { backgroundColor: '#f3f4f6', color: '#4b5563' }}
+      >
+        Financial Impact
+      </button>
+    </div>
+    {resultsView === 'dashboard' && <EmployeeDashboard />}
+    {resultsView === 'financial' && <FinancialImpactDashboard employees={filteredResult} />}
+  </>
+)}
         {!landingVisible && activeTab === 'prehire' && preHireResult.length > 0 && (
-          <EmployeeDashboard overrideResult={preHireResult} />
+          <>
+            <div className="flex justify-center gap-2 mb-4 mt-6">
+              <button
+                onClick={() => setResultsView('dashboard')}
+                className="px-5 py-2 rounded-full text-sm font-semibold transition-colors"
+                style={resultsView === 'dashboard' ? { backgroundColor: BRAND.primary, color: '#fff' } : { backgroundColor: '#f3f4f6', color: '#4b5563' }}
+              >
+                Retention Dashboard
+              </button>
+              <button
+                onClick={() => setResultsView('financial')}
+                className="px-5 py-2 rounded-full text-sm font-semibold transition-colors"
+                style={resultsView === 'financial' ? { backgroundColor: BRAND.primary, color: '#fff' } : { backgroundColor: '#f3f4f6', color: '#4b5563' }}
+              >
+                Financial Impact
+              </button>
+            </div>
+            {resultsView === 'dashboard' && <EmployeeDashboard overrideResult={preHireResult} />}
+            {resultsView === 'financial' && <FinancialImpactDashboard employees={preHireResult} />}
+          </>
         )}
 
       </div>
